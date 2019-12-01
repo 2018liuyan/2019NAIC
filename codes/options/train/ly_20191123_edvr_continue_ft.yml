@@ -1,10 +1,11 @@
 #### general settings
-name: ly_20191123_EDVR_5frames_continue_ft
+name: ly_20191128_EDVR_5frames_ft_270000iters_continue
 use_tb_logger: true
 model: video_base
 distortion: sr
 scale: 4
 gpu_ids: [0,1,2,3]
+dist: True
 
 #### datasets
 datasets:
@@ -51,13 +52,13 @@ network_G:
 
 #### path
 path:
-  pretrain_model_G: /root/group-video-quality-enhance/NAIC/ly/ly_20191120_EDVR_5frames/models/18000G/80000_G.pth
+  pretrain_model_G: /root/group-video-quality-enhance/NAIC/ly/ly_20191120_EDVR_5frames/models/270000_G.pth
   strict_load: false
   resume_state: ~
 
 #### training settings: learning rate scheme, loss
 train:
-  lr_G: !!float 2e-4
+  lr_G: !!float 1e-5
   lr_scheme: CosineAnnealingLR_Restart
   beta1: 0.9
   beta2: 0.99
