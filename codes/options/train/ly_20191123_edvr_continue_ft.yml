@@ -1,0 +1,81 @@
+#### general settings
+name: ly_20191123_EDVR_5frames_continue_ft
+use_tb_logger: true
+model: video_base
+distortion: sr
+scale: 4
+gpu_ids: [0,1,2,3]
+
+#### datasets
+datasets:
+  train:
+    name: REDS
+    mode: REDS
+    interval_list: [1]
+    random_reverse: false
+    border_mode: false
+    dataroot_GT: /root/group-video-quality-enhance/NAIC/data/all_data/lmdb
+    dataroot_LQ: /root/group-video-quality-enhance/NAIC/data/all_data/lmdb
+    data_type: 'lmdb'
+
+    N_frames: 5
+    use_shuffle: true
+    n_workers: 8  # per GPU
+    batch_size: 16
+    GT_size: 256
+    LQ_size: 64
+    use_flip: true
+    use_rot: true
+    color: RGB
+  val:
+    name: REDS4
+    mode: video_test
+    dataroot_GT: /root/group-video-proc/NAIC/datasets/data/val/hr
+    dataroot_LQ: /root/group-video-proc/NAIC/datasets/data/val/lr
+    cache_data: True
+    N_frames: 5
+    padding: new_info
+    data_type: 'lmdb'
+
+#### network structures
+network_G:
+  which_model_G: EDVR
+  nf: 64
+  nframes: 5
+  groups: 8
+  front_RBs: 5
+  back_RBs: 10
+  predeblur: false
+  HR_in: false
+  w_TSA: true
+
+#### path
+path:
+  pretrain_model_G: /root/group-video-quality-enhance/NAIC/ly/ly_20191120_EDVR_5frames/models/18000G/80000_G.pth
+  strict_load: false
+  resume_state: ~
+
+#### training settings: learning rate scheme, loss
+train:
+  lr_G: !!float 2e-4
+  lr_scheme: CosineAnnealingLR_Restart
+  beta1: 0.9
+  beta2: 0.99
+  niter: 310000
+  ft_tsa_only: -1
+  warmup_iter: -1  # -1: no warm up
+  T_period: [50000, 100000, 150000, 150000, 150000]
+  restarts: [50000, 150000, 300000, 450000]
+  restart_weights: [1, 1, 1, 1]
+  eta_min: !!float 1e-7
+
+  pixel_criterion: cb
+  pixel_weight: 1.0
+  val_freq: 3000
+
+  manual_seed: 0
+
+#### logger
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
